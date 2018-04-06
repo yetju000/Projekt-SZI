@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\CameraScript.cs" />
+     <Compile Include="Assets\Scripts\TractorMovement.cs" />
      <None Include="Assets\read me.txt" />
  <Reference Include="Facebook.Unity.Settings">
  <HintPath>C:/Users/Adrian/Desktop/Traktor/Traktor/Library/FacebookSDK/Facebook.Unity.Settings.dll</HintPath>

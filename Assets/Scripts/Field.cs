@@ -83,12 +83,24 @@ public class Field : MonoBehaviour {
 	public bool checkIrrigation() {
 		return irrigation;
 	}
+	public bool checkSick() {
+		return plant.checkSickness ();
+	}
 	public void Irrigate() {
 		irrigation = true;
+	}
+	public void SavePlant() {
+		plant.SavePlant ();
 	}
 	private void Dewater() {
 		if (Random.Range(1,100)<chanceForDewater)
 			irrigation = false;
+	}
+	public bool checkForCollect() {
+		return plant.checkForCollect ();
+	}
+	public int Collect() {
+		return plant.Collect ();
 	}
 	public void PlantIt(string name) {
 
@@ -120,9 +132,9 @@ public abstract class Plant {
 
 	protected int HowManyTimesLackOfWater; //0 = ok , more than 10 = plant is dead
 	protected int HowManyTimesLackOfMinerals;
+	protected int HowManyTimesSick; //how long is plant sick. if more than 10 plant is dead
 
 	protected bool sick; // 0 if no , 1 if yes
-	protected int HowManyTimesSick; //how long is plant sick. if more than 10 plant is dead
 	protected int chanceForSick; // % for sick
 
 	public string getName(){

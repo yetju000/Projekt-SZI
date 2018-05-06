@@ -49,7 +49,7 @@ public class Field : MonoBehaviour {
 
 		if (Input.GetKeyDown(KeyCode.P))
 		{if (!state) {
-				Debug.Log (state);
+				
 				PlantIt("Tulip");
 			}}
 		
@@ -59,7 +59,7 @@ public class Field : MonoBehaviour {
 				Material[] ma = mesh.materials;
 				ma [0] = grass;
 				mesh.materials = ma;
-				Debug.Log (plant.Collect ());
+
 			}
 		}
 	}
@@ -79,6 +79,8 @@ public class Field : MonoBehaviour {
 	private void LessMinerals() {
 		if (Random.Range(1,100)<chanceForLessMinerals)
 			minerals -= 1;
+		if (minerals < 0)
+			minerals = 0;
 	}
 	public bool checkIrrigation() {
 		return irrigation;

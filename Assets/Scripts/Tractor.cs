@@ -4,120 +4,130 @@ using UnityEngine;
 
 public class Tractor : MonoBehaviour {
 
-	int bin = 0;  //bin for dead plants
-	int minerals = 25;  // how many minerals
-	int water = 25;  //how many water
-	int medicine = 15;  //how many medicine
-	int collectingPlace = 0;  //how many place left for collecting. max 50
-	int newTulips = 15; //how many new plants
-	int newCorns = 15; //how many new plants
-	int newWheat = 15; //how many new plants
-	int newColza = 15; //how many new plants
+
 	int actualPositionX = 1; //actual position of tractor
 	int actualPositionY = 8;
 	public GameObject Crate;
+	Field [,] field;
 	Field actualField;
 
 	// Use this for initialization
 	void Start () {
+		//field = new Field[20][20];
+		field = new Field[20,20];
+		for (int i = 2; i <= 19; i++) {
+			for (int j = 2; j <= 19; j++) {
+				field[i-1,j-1] = Crate.transform.Find ("Row ("+i+")").transform.Find ("Crate ("+j+")").GetComponent<Field> ();   //do tablicy field[20][20] zapisujemy informacje o wszystkich polach 
+			}
+		}
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
+		for (int i = 2; i <= 19; i++) {
+			for (int j = 2; j <= 19; j++) {
+				Debug.Log ("Pole["+i+"]["+j+"] : "+CheckGroundForPlant(i,j)+" "+CheckForIrrigation(i,j)+" "+CheckForMinerals(i,j)+" "+CheckSick(i,j)+" "+CheckForCollect(i,j)+" "); //check every ground. To test click 'P' to plant first rov and 'C' to collect
+			}
 		}
+
+
+		}
+
 	public void changeField(int x, int y) {
-		actualField = Crate.transform.Find ("Row ("+x+")").transform.Find ("Crate ("+y+")").GetComponent<Field> ();
+		actualField = field [x-1,y-1]; //because we only can use functions Plant , Refillwater , Refilminerals, SavePlantWhenSick , Collect on actualField 
 	}
-	public void GoField(int x, int y) {
+	public void GoField(int x, int y) {  //tractor movement
 		//TODO
 	}
-	public void Plant(string name) {
-		if (name.Equals ("Tulip")) {
-			if (newTulips > 0) {
-				actualField.PlantIt (name);
-				newTulips -= 1;
-			}
-		}
-		if (name.Equals ("Corn")) {
-			if (newCorns > 0) {
-				actualField.PlantIt (name);
-				newCorns -= 1;
-			}
-		}
-		if (name.Equals ("Wheat")) {
-			if (newWheat > 0) {
-				actualField.PlantIt (name);
-				newWheat -= 1;
-			}
-		}
-		if (name.Equals ("Colza")) {
-			if (newColza > 0) {
-				actualField.PlantIt (name);
-				newColza -= 1;
-			}
-		}
-	}
-	public bool CheckGroundForPlant () {  //if true , we can plant
-		if (actualField != null) {
-			if (!actualField.getState ())
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	//functions below can be used at any field
+	public bool CheckGroundForPlant (int x , int y) {  //if true , we can plant
+		if (field[x-1,y-1] != null) {
+			if (!field[x-1,y-1].getState ())
 				return true;
 			else
 				return false;
 		} else
 			return false;
 	}
-	public bool CheckForIrrigation() {  //if false - need to refill water
-		if (actualField != null) {
-			return actualField.checkIrrigation ();
+	public bool CheckForIrrigation(int x, int y) {  //if false - need to refill water
+		if (field[x-1,y-1] != null) {
+			return field[x-1,y-1].checkIrrigation ();
 		} else
 			return true;
 	}
-	public int CheckForMinerals() {  //if 2 - its ok , 1 - medium , 0 need minerals quickly
-		if (actualField != null) {
-			return actualField.checkMinerals ();
+	public int CheckForMinerals(int x , int y) {  //if 2 - its ok , 1 - medium , 0 need minerals quickly
+		if (field[x-1,y-1] != null) {
+			return field[x-1,y-1].checkMinerals ();
 		} else
 			return 2;
 	}
-	public bool CheckSick() { //if true - needs medicine , if false its ok
-		if (actualField != null) {
-			return actualField.checkSick ();
+	public bool CheckSick(int x, int y) { //if true - needs medicine , if false its ok
+		if (field[x-1,y-1] != null) {
+			return field[x-1,y-1].checkSick ();
 		} else
 			return false;
 	}
-	public bool CheckForCollect() { //if yes - need to be collected
-		if (actualField != null) {
-			return actualField.checkForCollect();
+	public bool CheckForCollect(int x , int y) { //if yes - need to be collected
+		if (field[x-1,y-1] != null) {
+			return field[x-1,y-1].checkForCollect();
 		} else
 			return false;
 	}
 
+
+
+	//functions below can are used on actual field only.
+	public void Plant(string name) {  
+		if (name.Equals ("Tulip")) {
+
+			actualField.PlantIt (name);
+
+		}
+		if (name.Equals ("Corn")) {
+
+			actualField.PlantIt (name);
+
+		}
+		if (name.Equals ("Wheat")) {
+
+			actualField.PlantIt (name);
+
+		}
+		if (name.Equals ("Colza")) {
+
+			actualField.PlantIt (name);
+
+		}
+	}
 	public void RefillWater() {
-		water -= 1;
 		actualField.Irrigate ();
 	}
 	public void RefillMinerals(int HowMany) {
-		minerals -= HowMany;
 		actualField.AddMinerals (HowMany);
 	}
 	public void SavePlantWhenSick() {
-		medicine -= 1;
 		actualField.SavePlant ();
 	}
 	public void Collect() {
-		collectingPlace += actualField.Collect ();
+		actualField.Collect ();
 	}
-	public void TractorInBaseRefill () { //when in base
-		bin = 0;  
-		minerals = 25;  
-		water = 25;  
-		medicine = 15;  
-		collectingPlace = 0;  
-		newTulips = 15; 
-		newCorns = 15; 
-		newWheat = 15; 
-		newColza = 15; 
-	}
+
 
 }
 

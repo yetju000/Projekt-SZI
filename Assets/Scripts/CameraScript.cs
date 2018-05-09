@@ -15,5 +15,6 @@ public class CameraScript : MonoBehaviour {
 	// Update is called once per frame
 	void LateUpdate () {
 		transform.position = agent.transform.position + offset;
+		transform.eulerAngles= new Vector3 (90,0,0);
 	}
 }

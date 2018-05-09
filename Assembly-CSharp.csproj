@@ -49,6 +49,10 @@
      <Compile Include="Assets\Scripts\CameraScript.cs" />
      <Compile Include="Assets\Scripts\Field.cs" />
      <Compile Include="Assets\Scripts\Tractor.cs" />
+     <Compile Include="Assets\pathfinder\Grid.cs" />
+     <Compile Include="Assets\pathfinder\MoveTarget.cs" />
+     <Compile Include="Assets\pathfinder\Node.cs" />
+     <Compile Include="Assets\pathfinder\Pathfinding.cs" />
      <None Include="Assets\read me.txt" />
  <Reference Include="Facebook.Unity.Settings">
  <HintPath>C:/Users/Adrian/Desktop/Traktor/Traktor/Library/FacebookSDK/Facebook.Unity.Settings.dll</HintPath>

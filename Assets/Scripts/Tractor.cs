@@ -83,7 +83,6 @@ public class Tractor : MonoBehaviour {
 		/// max = field.getPriority()
 
 
-		////////LYSY TYLKO W TYM IFIE OGARNIAJ. JAK CHCESZ COS ZROBIC NA POLU DO KTOREG DOJEDZIESZ TO ROBISZ actualField.akcja    :D akcja moze byc : 
 		/// checkMinerals() zwraca ilosc mineralow na polu(0-chujowo, 1-ok , 2 to max)
 		/// AddMinerals(int) podajesz ile mineralow chcesz dodac. jesli checkMinerals zwrocilo 2 to nic nie dodajesz , jesli zwrocilo 1 to dodajesz 1 a jesli zwrocilo 0 to dodajesz 2
 		/// checkIrrigation() jesli zwrocilo false to znaczy ze nie jest nawodniona , jesli true to znaczy ze jest ok
@@ -102,19 +101,68 @@ public class Tractor : MonoBehaviour {
 		// if state == true to znaczy ze cos rosnie
 
 		if (transform.position == GoWhere) {  
+			updatePriority ();
 			// HERE WE MAKE TASKS FOR TRACTOR FOR DESTINATION POINT. FOR EXAMPLE PLANT RANDOM PLANT
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+<<<<<<< HEAD
+			if (!actualField.getState () && actualField.type.Equals ("PlantField")) {
+				actualField.CheckDead ();
+=======
 			// jeżeli nie ma roślinki
 			if (!actualField.getState() && actualField.type.Equals("PlantField")) {
+>>>>>>> af17bfe2f5f713e918294b8b7619ad257e88cf56
 				// zmienilem na UnityEngine bo nie sie kłóciło z System.Random
 				int los = UnityEngine.Random.Range (1, 4);
 				if (los == 1)
-					actualField.PlantIt("Tulip");
+					actualField.PlantIt ("Tulip");
 				if (los == 2)
-					actualField.PlantIt("Wheat");
+					actualField.PlantIt ("Wheat");
 				if (los == 3)
-					actualField.PlantIt("Corn");
+					actualField.PlantIt ("Corn");
 				if (los == 4)
+<<<<<<< HEAD
+					actualField.PlantIt ("Colza");
+				if (!actualField.checkIrrigation ()) {
+					actualField.Irrigate ();
+				}
+				if (actualField.checkMinerals () < 2) {
+					if (actualField.checkMinerals () == 1)
+						actualField.AddMinerals (1);
+					else
+						actualField.AddMinerals (2);
+				}
+			} else if (actualField.type.Equals ("PlantField")){
+				if (actualField.checkForCollect ()) {
+					actualField.priority = -10;
+					actualField.MakeGrass ();
+					actualField.Collect ();
+					if (!actualField.checkIrrigation ()) {
+						actualField.Irrigate ();
+					}
+					if (actualField.checkMinerals () < 2) {
+						if (actualField.checkMinerals () == 1)
+							actualField.AddMinerals (1);
+						else
+							actualField.AddMinerals (2);
+					}
+				} else {
+					actualField.CheckDead ();
+					if (!actualField.checkIrrigation ()) {
+						actualField.Irrigate ();
+					}
+					if (actualField.checkMinerals () < 2) {
+						if (actualField.checkMinerals () == 1)
+							actualField.AddMinerals (1);
+						else
+							actualField.AddMinerals (2);
+					}
+					if (actualField.checkSick ()) {
+						actualField.SavePlant ();
+					}
+
+				}
+
+=======
 					actualField.PlantIt("Colza");
 
 				// sprawdzam mineraly i wode po dojechaniu na miejsce
@@ -122,6 +170,7 @@ public class Tractor : MonoBehaviour {
 					actualField.AddMinerals (3);
 				if (actualField.checkIrrigation() == false)
 					actualField.Irrigate ();		
+>>>>>>> af17bfe2f5f713e918294b8b7619ad257e88cf56
 			}
 
 			// jeżeli jest już jakas roślinka
@@ -162,6 +211,8 @@ public class Tractor : MonoBehaviour {
 			// kolejna pozycja z kolejki priorytetowej
 			// zamiast field[10, 19] -> i oraz j tam gdzie priority jest max w PriorityTable
 			// i chyba też SpeedTable
+			//int [] prioritypoints = new int[2];
+			//prioritypoints = updatePriorityPoint ();
 			priorytetX = updatePriorityPoint()[0];
 			priorytetY = updatePriorityPoint()[1];
 			TargetPosition.transform.position = field[priorytetX, priorytetY].transform.position;
@@ -172,8 +223,8 @@ public class Tractor : MonoBehaviour {
 
 		timer -= Time.deltaTime;
 		if (timer < 0) {
-			updatePriority ();
-			timer = 3;
+			//updatePriority ();
+			timer = 1;
 		}
 	}
 
@@ -185,6 +236,7 @@ public class Tractor : MonoBehaviour {
 		for (int i = 0; i < 20; i++) {
 			for (int j = 0; j < 20; j++) {
 				PriorityTable [i, j] = field [i, j].priority;
+
 			}
 		}
 	}
@@ -194,88 +246,19 @@ public class Tractor : MonoBehaviour {
 		// pozycja i, j elementu max
 		int[] pozMax = new int[2];
 		// max priorytet
-		int maxP = 0;
+		int maxP = -1;
 
 		for (int i = 0; i < 20; i++) {
 			for (int j = 0; j < 20; j++) {
-				PriorityTable [i, j] = field [i, j].priority;
 				if (field [i, j].priority > maxP) {
 					pozMax[0] = i;
 					pozMax [1] = j;
+					maxP = field [i, j].priority;
 				}
 			}
 		}
 		return pozMax;
 	}
 		
-	//functions below can be used at any field
-	public bool CheckGroundForPlant (int x , int y) {  //if true , we can plant
-		if (field[x-1,y-1] != null) {
-			if (!field[x-1,y-1].getState ())
-				return true;
-			else
-				return false;
-		} else
-			return false;
-	}
-	public bool CheckForIrrigation(int x, int y) {  //if false - need to refill water
-		if (field[x-1,y-1] != null) {
-			return field[x-1,y-1].checkIrrigation ();
-		} else
-			return true;
-	}
-	public int CheckForMinerals(int x , int y) {  //if 2 - its ok , 1 - medium , 0 need minerals quickly
-		if (field[x-1,y-1] != null) {
-			return field[x-1,y-1].checkMinerals ();
-		} else
-			return 2;
-	}
-	public bool CheckSick(int x, int y) { //if true - needs medicine , if false its ok
-		if (field[x-1,y-1] != null) {
-			return field[x-1,y-1].checkSick ();
-		} else
-			return false;
-	}
-	public bool CheckForCollect(int x , int y) { //if yes - need to be collected
-		if (field[x-1,y-1] != null) {
-			return field[x-1,y-1].checkForCollect();
-		} else
-			return false;
-	}
 
-	//functions below can are used on actual field only.
-	public void Plant(string name) {  
-		if (name.Equals ("Tulip")) {
-
-			actualField.PlantIt (name);
-
-		}
-		if (name.Equals ("Corn")) {
-
-			actualField.PlantIt (name);
-
-		}
-		if (name.Equals ("Wheat")) {
-
-			actualField.PlantIt (name);
-
-		}
-		if (name.Equals ("Colza")) {
-
-			actualField.PlantIt (name);
-
-		}
-	}
-	public void RefillWater() {
-		actualField.Irrigate ();
-	}
-	public void RefillMinerals(int HowMany) {
-		actualField.AddMinerals (HowMany);
-	}
-	public void SavePlantWhenSick() {
-		actualField.SavePlant ();
-	}
-	public void Collect() {
-		actualField.Collect ();
-	}
 }

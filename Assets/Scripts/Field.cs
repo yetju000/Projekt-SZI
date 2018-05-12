@@ -17,7 +17,7 @@ public class Field : MonoBehaviour {
 
 	Plant plant = null;
 	float timer = 0.0f;
-	MeshRenderer mesh;
+	public MeshRenderer mesh;
 	public string type;
 
 	// textury
@@ -38,26 +38,56 @@ public class Field : MonoBehaviour {
 	void Start () {
 		timer = Random.Range (3,6);
 		mesh = this.GetComponent<MeshRenderer>();
+<<<<<<< HEAD
+
+		if (type.Equals ("PlantField")) {
+			fieldSpeed = 20f;
+			priority = 1;
+		}
+			
+		if (type.Equals ("PathField")) {
+			fieldSpeed = 30f;
+			priority = -1;
+		}
+			
+		if (type.Equals ("MudField")) {
+=======
 		priority = 0;
 
 		if (type.Equals ("PlantField"))
 			fieldSpeed = 5f;
 		if (type.Equals ("PathField"))
+>>>>>>> af17bfe2f5f713e918294b8b7619ad257e88cf56
 			fieldSpeed = 10f;
-		if (type.Equals ("MudField"))
-			fieldSpeed = 1f;
+			priority = -1;
+		}
 	}
 		
 	// Update is called once per frame
 	void Update () {
 		if (type.Equals("PlantField")) {
+			
+			if (plant.getState ())
+				priority = 0;
+			if (!checkIrrigation()) 
+				priority = priority + 3;
+			if (checkMinerals () == 1)
+				priority = priority + 2;
+			if (checkMinerals () == 0)
+				priority = priority + 3;
+			if (checkSick ())
+				priority = priority + 5;
+			if (checkForCollect ())
+				priority = priority + 10;
 		timer -= Time.deltaTime;
 			if (plant == null) {
 				setState (false);
-				priority = 0;
+				priority = 1;
 			}
 		if (timer < 0) {
 			if (plant != null) {
+					priority = 0;
+
 				if (!plant.getState()) {
 					setState (false);
 					plant = null;
@@ -67,6 +97,35 @@ public class Field : MonoBehaviour {
 					mesh.materials = ma;
 						
 				}
+<<<<<<< HEAD
+				
+
+						
+
+
+					if (plant.Grow (irrigation, minerals)) {
+						if (plant.getName ().Equals ("Tulipan")) {
+							Material[] ma = mesh.materials;
+							ma [0] = bigTulips;
+							mesh.materials = ma;
+						}
+						if (plant.getName ().Equals ("Pszenica")) {
+							Material[] ma = mesh.materials;
+							ma [0] = bigWheat;
+							mesh.materials = ma;
+						}
+						if (plant.getName ().Equals ("Kukurydza")) {
+							Material[] ma = mesh.materials;
+							ma [0] = bigCorn;
+							mesh.materials = ma;
+						}
+						if (plant.getName ().Equals ("Rzepak")) {
+							Material[] ma = mesh.materials;
+							ma [0] = bigColza;
+							mesh.materials = ma;
+						}
+					}
+=======
 				if (plant.checkForCollect ()) {
 					if (plant.getName ().Equals ("Tulipan")) {
 						Material[] ma = mesh.materials;
@@ -90,6 +149,7 @@ public class Field : MonoBehaviour {
 					}
 				}
 				plant.Grow (irrigation,minerals);
+>>>>>>> af17bfe2f5f713e918294b8b7619ad257e88cf56
 				plant.checkOvergroved ();
 
 			}
@@ -97,6 +157,11 @@ public class Field : MonoBehaviour {
 			Dewater ();
 			LessMinerals ();
 
+<<<<<<< HEAD
+			timer = Random.Range (4,7);
+					
+
+=======
 			timer = Random.Range (3,6);
 
 			
@@ -110,16 +175,12 @@ public class Field : MonoBehaviour {
 				priority = priority + 5;
 			if (checkForCollect ())
 				priority = priority + 10;
+>>>>>>> af17bfe2f5f713e918294b8b7619ad257e88cf56
 				
 		}
 				
 		}
-		if (type.Equals ("PathField")) {
-			priority = -1;
-		}
-		if (type.Equals ("MudField")) {
-			priority = -1;
-		}
+
 	}
 
 	public bool getState() {
@@ -160,8 +221,25 @@ public class Field : MonoBehaviour {
 		return plant.checkForCollect ();
 	}
 	public int Collect() {
-		return plant.Collect ();
+		int howmany = plant.Collect();
+		plant = null;
+		return howmany;
 	}
+	public void MakeGrass() {
+		Material[] ma = mesh.materials;
+		ma [0] = grass;
+		mesh.materials = ma;
+	}
+	public void CheckDead() {
+		Material[] ma = mesh.materials;
+		if (mesh.materials [0].name.Equals ("DeadPlant") || mesh.materials [0].name.Equals ("deadPlant")) {
+			ma [0] = grass;
+			mesh.materials = ma;
+		}
+	}
+
+
+
 	public void PlantIt(string name) {
 		state = true;
 		if (name.Equals("Tulip")){
@@ -222,7 +300,8 @@ public abstract class Plant {
 	}
 
 
-	public virtual void Grow(bool irrigation,int minerals){
+	public virtual bool Grow(bool irrigation,int minerals){
+		return false;
 	}
 
 	public void SavePlant() {
@@ -232,6 +311,7 @@ public abstract class Plant {
 
 	public int Collect() {
 		state = false;
+
 		return Random.Range (1, 3);
 	}
 
@@ -253,14 +333,14 @@ public class Tulip : Plant {
 	public Tulip(){
 		name = "Tulipan";
 		state = true;
-		HowMuchGrowed = 80;
+		HowMuchGrowed = 0;
 		sick = false;
 		HowManyTimesSick = 0;
 		chanceForSick = 5;
 		HowManyTimesLackOfMinerals = 0;
 	}
 
-	public override void Grow(bool irrigation,int minerals) {
+	public override bool Grow(bool irrigation,int minerals) {
 		if (HowManyTimesLackOfWater > 10 || HowManyTimesSick > 10 || HowManyTimesLackOfMinerals > 10)
 			state = false;
 
@@ -285,7 +365,11 @@ public class Tulip : Plant {
 		}
 		else if (sick) 
 			HowManyTimesSick += 1;
-		
+
+		if (HowMuchGrowed >= 100)
+			return true;
+		else
+			return false;
 	}
 } 
 
@@ -301,7 +385,7 @@ public class Corn : Plant {
 		HowManyTimesLackOfMinerals = 0;
 	}
 
-	public override void Grow(bool irrigation,int minerals) {
+	public override bool Grow(bool irrigation,int minerals) {
 		if (HowManyTimesLackOfWater > 10 || HowManyTimesSick > 10 || HowManyTimesLackOfMinerals > 10)
 			state = false;
 
@@ -326,7 +410,10 @@ public class Corn : Plant {
 		}
 		else if (sick) 
 			HowManyTimesSick += 1;
-
+		if (HowMuchGrowed >= 100)
+			return true;
+		else
+			return false;
 	}
 } 
 
@@ -342,7 +429,7 @@ public class Wheat : Plant {
 		HowManyTimesLackOfMinerals = 0;
 	}
 
-	public override void Grow(bool irrigation,int minerals) {
+	public override bool Grow(bool irrigation,int minerals) {
 		if (HowManyTimesLackOfWater > 10 || HowManyTimesSick > 10 || HowManyTimesLackOfMinerals > 10)
 			state = false;
 
@@ -367,7 +454,10 @@ public class Wheat : Plant {
 		}
 		else if (sick) 
 			HowManyTimesSick += 1;
-
+		if (HowMuchGrowed >= 100)
+			return true;
+		else
+			return false;
 	}
 } 
 
@@ -383,7 +473,7 @@ public class Colza : Plant {
 		HowManyTimesLackOfMinerals = 0;
 	}
 
-	public override void Grow(bool irrigation,int minerals) {
+	public override bool Grow(bool irrigation,int minerals) {
 		if (HowManyTimesLackOfWater > 10 || HowManyTimesSick > 10 || HowManyTimesLackOfMinerals > 10)
 			state = false;
 
@@ -408,7 +498,10 @@ public class Colza : Plant {
 		}
 		else if (sick) 
 			HowManyTimesSick += 1;
-
+		if (HowMuchGrowed >= 100)
+			return true;
+		else
+			return false;
 	}
 } 
 

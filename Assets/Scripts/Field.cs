@@ -1,22 +1,26 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 public class Field : MonoBehaviour {
 	//there can be 3 type of fields : MudField ,PlantField and  PathField
 
+	public int priority; 
 
-
-	public int priority; // if (state false = 0, state true = 1) , (irrigation false = 3 , irrigation true = 0) , (minerals 2 = 0 , minerals 1 = 2 , minerals 0 = 3) , (sick 1 = 5 , sick 0 = 0) , 
+	// if (state false = 0, state true = 1) , (irrigation false = 3 , irrigation true = 0) , (minerals 2 = 0 , minerals 1 = 2 , minerals 0 = 3) , (sick 1 = 5 , sick 0 = 0) , 
 	//checkForCollect true = 10 , checkForCollect false = 0
 	bool state = false; // if anything grows here. 0 = no , 1 = yes
 	bool irrigation = true; // if needs water = 0 , if its ok = 1;
 	int minerals = 2; //0 if no minerals , 1 if medium , 2 if its ok
 	int chanceForDewater = 5; // % for lack of water
 	int chanceForLessMinerals = 5;
+
 	Plant plant = null;
 	float timer = 0.0f;
 	MeshRenderer mesh;
 	public string type;
+
+	// textury
 	public Material grass;
 	public Material smallTulips;
 	public Material bigTulips;
@@ -27,12 +31,15 @@ public class Field : MonoBehaviour {
 	public Material smallColza;
 	public Material bigColza;
 	public Material deadPlant;
+
 	public float fieldSpeed;
-	// Use this for initializationj
+
+	// Use this for initialization
 	void Start () {
 		timer = Random.Range (3,6);
 		mesh = this.GetComponent<MeshRenderer>();
 		priority = 0;
+
 		if (type.Equals ("PlantField"))
 			fieldSpeed = 5f;
 		if (type.Equals ("PathField"))
@@ -55,53 +62,54 @@ public class Field : MonoBehaviour {
 					setState (false);
 					plant = null;
 
-							Material[] ma = mesh.materials;
-							ma [0] = deadPlant;
-							mesh.materials = ma;
+					Material[] ma = mesh.materials;
+					ma [0] = deadPlant;
+					mesh.materials = ma;
 						
 				}
 				if (plant.checkForCollect ()) {
-						if (plant.getName ().Equals ("Tulipan")) {
-							Material[] ma = mesh.materials;
-							ma [0] = bigTulips;
-							mesh.materials = ma;
-						}
-						if (plant.getName ().Equals ("Pszenica")) {
-							Material[] ma = mesh.materials;
-							ma [0] = bigWheat;
-							mesh.materials = ma;
-						}
-						if (plant.getName ().Equals ("Kukurydza")) {
-							Material[] ma = mesh.materials;
-							ma [0] = bigCorn;
-							mesh.materials = ma;
-						}
-						if (plant.getName ().Equals ("Rzepak")) {
-							Material[] ma = mesh.materials;
-							ma [0] = bigColza;
-							mesh.materials = ma;
-						}
+					if (plant.getName ().Equals ("Tulipan")) {
+						Material[] ma = mesh.materials;
+						ma [0] = bigTulips;
+						mesh.materials = ma;
+					}
+					if (plant.getName ().Equals ("Pszenica")) {
+						Material[] ma = mesh.materials;
+						ma [0] = bigWheat;
+						mesh.materials = ma;
+					}
+					if (plant.getName ().Equals ("Kukurydza")) {
+						Material[] ma = mesh.materials;
+						ma [0] = bigCorn;
+						mesh.materials = ma;
+					}
+					if (plant.getName ().Equals ("Rzepak")) {
+						Material[] ma = mesh.materials;
+						ma [0] = bigColza;
+						mesh.materials = ma;
+					}
 				}
 				plant.Grow (irrigation,minerals);
 				plant.checkOvergroved ();
 
-				}
+			}
+
 			Dewater ();
 			LessMinerals ();
 
 			timer = Random.Range (3,6);
 
-
-				if (!checkIrrigation()) 
-					priority = 3;
-				if (checkMinerals () == 1)
-					priority = priority + 2;
-				if (checkMinerals () == 0)
-					priority = priority + 3;
-				if (checkSick ())
-					priority = priority + 5;
-				if (checkForCollect ())
-					priority = priority + 10;
+			
+			if (!checkIrrigation()) 
+				priority = 3;
+			if (checkMinerals () == 1)
+				priority = priority + 2;
+			if (checkMinerals () == 0)
+				priority = priority + 3;
+			if (checkSick ())
+				priority = priority + 5;
+			if (checkForCollect ())
+				priority = priority + 10;
 				
 		}
 				
@@ -117,7 +125,7 @@ public class Field : MonoBehaviour {
 	public bool getState() {
 		return this.state;
 	}
-	private void setState(bool state) {
+	public void setState(bool state) {
 		this.state = state;
 	}
 	public int checkMinerals() {
@@ -155,7 +163,6 @@ public class Field : MonoBehaviour {
 		return plant.Collect ();
 	}
 	public void PlantIt(string name) {
-
 		state = true;
 		if (name.Equals("Tulip")){
 			Material[] ma = mesh.materials;

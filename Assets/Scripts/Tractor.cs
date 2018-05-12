@@ -95,9 +95,16 @@ public class Tractor : MonoBehaviour {
 		/// 
 		/// ///////////////////////////////////////////////////////////////////////////////////////////////
 
+		// if plant
+		// 		then
+		// if not plan
+		//	 	then posadź random plant
+		// if state == true to znaczy ze cos rosnie
+
 		if (transform.position == GoWhere) {  
 			// HERE WE MAKE TASKS FOR TRACTOR FOR DESTINATION POINT. FOR EXAMPLE PLANT RANDOM PLANT
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			// jeżeli nie ma roślinki
 			if (!actualField.getState() && actualField.type.Equals("PlantField")) {
 				// zmienilem na UnityEngine bo nie sie kłóciło z System.Random
 				int los = UnityEngine.Random.Range (1, 4);
@@ -109,7 +116,42 @@ public class Tractor : MonoBehaviour {
 					actualField.PlantIt("Corn");
 				if (los == 4)
 					actualField.PlantIt("Colza");
+
+				// sprawdzam mineraly i wode po dojechaniu na miejsce
+				if (actualField.checkMinerals() < 1)
+					actualField.AddMinerals (3);
+				if (actualField.checkIrrigation() == false)
+					actualField.Irrigate ();		
 			}
+
+			// jeżeli jest już jakas roślinka
+			if (actualField.getState () && actualField.type.Equals ("PlantField")) {
+				// sprawdzam mineraly i wode po dojechaniu na miejsce
+				if (actualField.checkMinerals() < 1)
+					actualField.AddMinerals (3);
+				if (actualField.checkIrrigation() == false)
+					actualField.Irrigate ();	
+
+				// sprawdzamy jak się ma roślinka
+				if (actualField.checkSick () == true)
+					actualField.SavePlant ();
+				
+				if (actualField.checkForCollect () == true){
+					actualField.Collect ();
+					// zbieramy i sadzimy nową
+					int los = UnityEngine.Random.Range (1, 4);
+					if (los == 1)
+						actualField.PlantIt("Tulip");
+					if (los == 2)
+						actualField.PlantIt("Wheat");
+					if (los == 3)
+						actualField.PlantIt("Corn");
+					if (los == 4)
+						actualField.PlantIt("Colza");
+				}
+
+			}
+
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 

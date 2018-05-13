@@ -38,27 +38,19 @@ public class Field : MonoBehaviour {
 	void Start () {
 		timer = Random.Range (3,6);
 		mesh = this.GetComponent<MeshRenderer>();
-<<<<<<< HEAD
 
 		if (type.Equals ("PlantField")) {
-			fieldSpeed = 20f;
+			fieldSpeed = 10f;
 			priority = 1;
 		}
 			
 		if (type.Equals ("PathField")) {
-			fieldSpeed = 30f;
+			fieldSpeed = 15f;
 			priority = -1;
 		}
 			
 		if (type.Equals ("MudField")) {
-=======
-		priority = 0;
-
-		if (type.Equals ("PlantField"))
 			fieldSpeed = 5f;
-		if (type.Equals ("PathField"))
->>>>>>> af17bfe2f5f713e918294b8b7619ad257e88cf56
-			fieldSpeed = 10f;
 			priority = -1;
 		}
 	}
@@ -66,43 +58,38 @@ public class Field : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (type.Equals("PlantField")) {
-			
-			if (plant.getState ())
-				priority = 0;
+
+			if (this.plant != null){
+				if (plant.getState())
+					priority = 0;
+				if (checkSick())
+					priority = priority + 5;
+				if (checkForCollect())
+					priority = priority + 10;
+			}
 			if (!checkIrrigation()) 
 				priority = priority + 3;
 			if (checkMinerals () == 1)
 				priority = priority + 2;
 			if (checkMinerals () == 0)
 				priority = priority + 3;
-			if (checkSick ())
-				priority = priority + 5;
-			if (checkForCollect ())
-				priority = priority + 10;
-		timer -= Time.deltaTime;
+			timer -= Time.deltaTime;
 			if (plant == null) {
 				setState (false);
 				priority = 1;
 			}
-		if (timer < 0) {
-			if (plant != null) {
+			if (timer < 0) {
+				if (plant != null) {
 					priority = 0;
+					if (!plant.getState()) {
+						setState (false);
+						plant = null;
 
-				if (!plant.getState()) {
-					setState (false);
-					plant = null;
-
-					Material[] ma = mesh.materials;
-					ma [0] = deadPlant;
-					mesh.materials = ma;
+						Material[] ma = mesh.materials;
+						ma [0] = deadPlant;
+						mesh.materials = ma;
 						
-				}
-<<<<<<< HEAD
-				
-
-						
-
-
+					}
 					if (plant.Grow (irrigation, minerals)) {
 						if (plant.getName ().Equals ("Tulipan")) {
 							Material[] ma = mesh.materials;
@@ -125,62 +112,13 @@ public class Field : MonoBehaviour {
 							mesh.materials = ma;
 						}
 					}
-=======
-				if (plant.checkForCollect ()) {
-					if (plant.getName ().Equals ("Tulipan")) {
-						Material[] ma = mesh.materials;
-						ma [0] = bigTulips;
-						mesh.materials = ma;
-					}
-					if (plant.getName ().Equals ("Pszenica")) {
-						Material[] ma = mesh.materials;
-						ma [0] = bigWheat;
-						mesh.materials = ma;
-					}
-					if (plant.getName ().Equals ("Kukurydza")) {
-						Material[] ma = mesh.materials;
-						ma [0] = bigCorn;
-						mesh.materials = ma;
-					}
-					if (plant.getName ().Equals ("Rzepak")) {
-						Material[] ma = mesh.materials;
-						ma [0] = bigColza;
-						mesh.materials = ma;
-					}
+					plant.checkOvergroved();
 				}
-				plant.Grow (irrigation,minerals);
->>>>>>> af17bfe2f5f713e918294b8b7619ad257e88cf56
-				plant.checkOvergroved ();
-
+				Dewater ();
+				LessMinerals ();
+				timer = Random.Range (4,7);
 			}
-
-			Dewater ();
-			LessMinerals ();
-
-<<<<<<< HEAD
-			timer = Random.Range (4,7);
-					
-
-=======
-			timer = Random.Range (3,6);
-
-			
-			if (!checkIrrigation()) 
-				priority = 3;
-			if (checkMinerals () == 1)
-				priority = priority + 2;
-			if (checkMinerals () == 0)
-				priority = priority + 3;
-			if (checkSick ())
-				priority = priority + 5;
-			if (checkForCollect ())
-				priority = priority + 10;
->>>>>>> af17bfe2f5f713e918294b8b7619ad257e88cf56
-				
 		}
-				
-		}
-
 	}
 
 	public bool getState() {
@@ -238,10 +176,9 @@ public class Field : MonoBehaviour {
 		}
 	}
 
-
-
 	public void PlantIt(string name) {
 		state = true;
+		Debug.Log("Sadzę " + name);
 		if (name.Equals("Tulip")){
 			Material[] ma = mesh.materials;
 			ma [0] = smallTulips;
@@ -269,241 +206,6 @@ public class Field : MonoBehaviour {
 	}
 
 }
-
-public abstract class Plant {
-	protected string name; //plant name
-	protected bool state; //0 = dead , 1 = alive
-
-	protected int HowMuchGrowed; //1 = small , 100 = need to be colected , 150 = overgroved
-
-	protected int HowManyTimesLackOfWater; //0 = ok , more than 10 = plant is dead
-	protected int HowManyTimesLackOfMinerals;
-	protected int HowManyTimesSick; //how long is plant sick. if more than 10 plant is dead
-
-	protected bool sick; // 0 if no , 1 if yes
-	protected int chanceForSick; // % for sick
-
-	public string getName(){
-		return name;
-	}
-
-	public bool getState(){
-		return state;
-	}
-
-	public int getHowMuchGrowed() {
-		return HowMuchGrowed;
-	}
-
-	public bool checkSickness() {
-		return sick;
-	}
-
-
-	public virtual bool Grow(bool irrigation,int minerals){
-		return false;
-	}
-
-	public void SavePlant() {
-		HowManyTimesSick = 0;
-		sick = false;
-	}
-
-	public int Collect() {
-		state = false;
-
-		return Random.Range (1, 3);
-	}
-
-	public void checkOvergroved() {
-		if (HowMuchGrowed > 150)
-			state = false;
-	}
-
-	public bool checkForCollect() {
-		if (HowMuchGrowed >= 100)
-			return true;
-		else
-			return false;
-	}
-}
-
-public class Tulip : Plant {
-	
-	public Tulip(){
-		name = "Tulipan";
-		state = true;
-		HowMuchGrowed = 0;
-		sick = false;
-		HowManyTimesSick = 0;
-		chanceForSick = 5;
-		HowManyTimesLackOfMinerals = 0;
-	}
-
-	public override bool Grow(bool irrigation,int minerals) {
-		if (HowManyTimesLackOfWater > 10 || HowManyTimesSick > 10 || HowManyTimesLackOfMinerals > 10)
-			state = false;
-
-		if (minerals > 0)
-			HowManyTimesLackOfMinerals = 0;
-
-		if (minerals == 0)
-			HowManyTimesLackOfMinerals += 1;
-
-		if (irrigation) {
-			HowManyTimesLackOfWater = 0;
-			HowMuchGrowed += Random.Range (3,5)+ minerals;
-		}
-		if (!irrigation) 
-				HowManyTimesLackOfWater += 1;
-		
-		if (!sick) {
-			HowManyTimesSick = 0;
-			if (Random.Range (1, 100) < chanceForSick)
-				sick = true;
-				
-		}
-		else if (sick) 
-			HowManyTimesSick += 1;
-
-		if (HowMuchGrowed >= 100)
-			return true;
-		else
-			return false;
-	}
-} 
-
-public class Corn : Plant {
-
-	public Corn(){
-		name = "Kukurydza";
-		state = true;
-		HowMuchGrowed = 0;
-		sick = false;
-		HowManyTimesSick = 0;
-		chanceForSick = 5;
-		HowManyTimesLackOfMinerals = 0;
-	}
-
-	public override bool Grow(bool irrigation,int minerals) {
-		if (HowManyTimesLackOfWater > 10 || HowManyTimesSick > 10 || HowManyTimesLackOfMinerals > 10)
-			state = false;
-
-		if (minerals > 0)
-			HowManyTimesLackOfMinerals = 0;
-
-		if (minerals == 0)
-			HowManyTimesLackOfMinerals += 1;
-
-		if (irrigation) {
-			HowManyTimesLackOfWater = 0;
-			HowMuchGrowed += Random.Range (3,5)+ minerals;
-		}
-		if (!irrigation) 
-			HowManyTimesLackOfWater += 1;
-
-		if (!sick) {
-			HowManyTimesSick = 0;
-			if (Random.Range (1, 100) < chanceForSick)
-				sick = true;
-
-		}
-		else if (sick) 
-			HowManyTimesSick += 1;
-		if (HowMuchGrowed >= 100)
-			return true;
-		else
-			return false;
-	}
-} 
-
-public class Wheat : Plant {
-
-	public Wheat(){
-		name = "Pszenica";
-		state = true;
-		HowMuchGrowed = 0;
-		sick = false;
-		HowManyTimesSick = 0;
-		chanceForSick = 5;
-		HowManyTimesLackOfMinerals = 0;
-	}
-
-	public override bool Grow(bool irrigation,int minerals) {
-		if (HowManyTimesLackOfWater > 10 || HowManyTimesSick > 10 || HowManyTimesLackOfMinerals > 10)
-			state = false;
-
-		if (minerals > 0)
-			HowManyTimesLackOfMinerals = 0;
-
-		if (minerals == 0)
-			HowManyTimesLackOfMinerals += 1;
-
-		if (irrigation) {
-			HowManyTimesLackOfWater = 0;
-			HowMuchGrowed += Random.Range (3,5)+ minerals;
-		}
-		if (!irrigation) 
-			HowManyTimesLackOfWater += 1;
-
-		if (!sick) {
-			HowManyTimesSick = 0;
-			if (Random.Range (1, 100) < chanceForSick)
-				sick = true;
-
-		}
-		else if (sick) 
-			HowManyTimesSick += 1;
-		if (HowMuchGrowed >= 100)
-			return true;
-		else
-			return false;
-	}
-} 
-
-public class Colza : Plant {
-
-	public Colza(){
-		name = "Rzepak";
-		state = true;
-		HowMuchGrowed = 0;
-		sick = false;
-		HowManyTimesSick = 0;
-		chanceForSick = 5;
-		HowManyTimesLackOfMinerals = 0;
-	}
-
-	public override bool Grow(bool irrigation,int minerals) {
-		if (HowManyTimesLackOfWater > 10 || HowManyTimesSick > 10 || HowManyTimesLackOfMinerals > 10)
-			state = false;
-
-		if (minerals > 0)
-			HowManyTimesLackOfMinerals = 0;
-
-		if (minerals == 0)
-			HowManyTimesLackOfMinerals += 1;
-
-		if (irrigation) {
-			HowManyTimesLackOfWater = 0;
-			HowMuchGrowed += Random.Range (3,5)+ minerals;
-		}
-		if (!irrigation) 
-			HowManyTimesLackOfWater += 1;
-
-		if (!sick) {
-			HowManyTimesSick = 0;
-			if (Random.Range (1, 100) < chanceForSick)
-				sick = true;
-
-		}
-		else if (sick) 
-			HowManyTimesSick += 1;
-		if (HowMuchGrowed >= 100)
-			return true;
-		else
-			return false;
-	}
-} 
 
 
 

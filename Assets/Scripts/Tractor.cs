@@ -9,7 +9,7 @@ public class Tractor : MonoBehaviour {
 
 	int actualPositionX = 0; //actual position of tractor
 	int actualPositionY = 7;
-	public GameObject Crate;
+	public GameObject CrateRows;
 	public GameObject TargetPosition;
 	Field [,] field;
 	int [,] PriorityTable;
@@ -37,7 +37,7 @@ public class Tractor : MonoBehaviour {
 		field = new Field[20,20];
 		for (int i = 1; i <= 20; i++) {
 			for (int j = 1; j <= 20; j++) {
-				field[i-1,j-1] = Crate.transform.Find ("Row ("+i+")").transform.Find ("Crate ("+j+")").GetComponent<Field> ();   //do tablicy field[20][20] zapisujemy informacje o wszystkich polach 
+				field[i-1,j-1] = CrateRows.transform.Find ("Row ("+i+")").transform.Find ("Crate ("+j+")").GetComponent<Field> ();   //do tablicy field[20][20] zapisujemy informacje o wszystkich polach 
 			}
 		}
 
@@ -59,7 +59,6 @@ public class Tractor : MonoBehaviour {
 	void Update () {
 		speed = field[actualPositionX,actualPositionY].fieldSpeed;
 		step = speed * Time.deltaTime;
-
 
 
 		if (grid.FinalPath.Count > 0) {
@@ -104,13 +103,8 @@ public class Tractor : MonoBehaviour {
 			updatePriority ();
 			// HERE WE MAKE TASKS FOR TRACTOR FOR DESTINATION POINT. FOR EXAMPLE PLANT RANDOM PLANT
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-<<<<<<< HEAD
 			if (!actualField.getState () && actualField.type.Equals ("PlantField")) {
 				actualField.CheckDead ();
-=======
-			// jeżeli nie ma roślinki
-			if (!actualField.getState() && actualField.type.Equals("PlantField")) {
->>>>>>> af17bfe2f5f713e918294b8b7619ad257e88cf56
 				// zmienilem na UnityEngine bo nie sie kłóciło z System.Random
 				int los = UnityEngine.Random.Range (1, 4);
 				if (los == 1)
@@ -120,8 +114,8 @@ public class Tractor : MonoBehaviour {
 				if (los == 3)
 					actualField.PlantIt ("Corn");
 				if (los == 4)
-<<<<<<< HEAD
 					actualField.PlantIt ("Colza");
+
 				if (!actualField.checkIrrigation ()) {
 					actualField.Irrigate ();
 				}
@@ -161,16 +155,6 @@ public class Tractor : MonoBehaviour {
 					}
 
 				}
-
-=======
-					actualField.PlantIt("Colza");
-
-				// sprawdzam mineraly i wode po dojechaniu na miejsce
-				if (actualField.checkMinerals() < 1)
-					actualField.AddMinerals (3);
-				if (actualField.checkIrrigation() == false)
-					actualField.Irrigate ();		
->>>>>>> af17bfe2f5f713e918294b8b7619ad257e88cf56
 			}
 
 			// jeżeli jest już jakas roślinka

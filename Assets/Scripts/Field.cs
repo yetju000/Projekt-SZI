@@ -40,17 +40,17 @@ public class Field : MonoBehaviour {
 		mesh = this.GetComponent<MeshRenderer>();
 
 		if (type.Equals ("PlantField")) {
-			fieldSpeed = 10f;
+			fieldSpeed = 20f;
 			priority = 1;
 		}
 			
 		if (type.Equals ("PathField")) {
-			fieldSpeed = 15f;
+			fieldSpeed = 30f;
 			priority = -1;
 		}
 			
 		if (type.Equals ("MudField")) {
-			fieldSpeed = 5f;
+			fieldSpeed = 10f;
 			priority = -1;
 		}
 	}
@@ -143,7 +143,10 @@ public class Field : MonoBehaviour {
 		return irrigation;
 	}
 	public bool checkSick() {
-		return plant.checkSickness();
+		if (this.plant != null) {
+			return plant.checkSickness();
+		}
+		return false;
 	}
 	public void Irrigate() {
 		irrigation = true;
@@ -156,7 +159,10 @@ public class Field : MonoBehaviour {
 			irrigation = false;
 	}
 	public bool checkForCollect() {
-		return plant.checkForCollect ();
+		if (this.plant != null) {
+			return plant.checkForCollect();
+		}
+		return false;
 	}
 	public int Collect() {
 		int howmany = plant.Collect();
@@ -178,7 +184,6 @@ public class Field : MonoBehaviour {
 
 	public void PlantIt(string name) {
 		state = true;
-		Debug.Log("Sadzę " + name);
 		if (name.Equals("Tulip")){
 			Material[] ma = mesh.materials;
 			ma [0] = smallTulips;

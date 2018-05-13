@@ -52,7 +52,7 @@ public class Pathfinding : MonoBehaviour {
                 {
                     continue;//Skip it
                 }
-                int MoveCost = CurrentNode.igCost + GetManhattenDistance(CurrentNode, NeighborNode);//Get the F cost of that neighbor
+				int MoveCost = CurrentNode.igCost + GetManhattenDistance(CurrentNode, NeighborNode);//getTime(CurrentNode, NeighborNode);//Get the F cost of that neighbor
 
                 if (MoveCost < NeighborNode.igCost || !OpenList.Contains(NeighborNode))//If the f cost is greater than the g cost or it is not in the open list
                 {
@@ -95,4 +95,15 @@ public class Pathfinding : MonoBehaviour {
 
         return ix + iy;//Return the sum
     }
+	/*
+	int getTime(Node startingNode, Node targetNode) {
+		float time = 0;
+		Node CurrentNode = startingNode;
+		time = startingNode.fieldSpeed + targetNode.fieldSpeed;
+
+		startingNode.GetType();
+
+		return (int) time;
+	}
+	*/
 }

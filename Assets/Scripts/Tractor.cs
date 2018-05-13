@@ -54,12 +54,62 @@ public class Tractor : MonoBehaviour {
 		//priorytet = actualField.getPriority ();
 		//Debug.Log("Priorytet poczatkowy: " + priorytet);
 	}
-	
+
+	private void irrigateFieldIfDry() {
+		if (!actualField.checkIrrigation()) {
+			actualField.Irrigate();
+			Debug.Log("(" + actualPositionX + "," + actualPositionY + "): Irrigating");
+		}
+	}
+
+	private void addMineralsToFieldIfNotEnough() {
+		int mineralsAddedAmount=0;
+		int fieldMinerals = actualField.checkMinerals();
+		if (fieldMinerals < 3) {
+			switch (fieldMinerals) {
+				case 0:
+					mineralsAddedAmount = 3;
+					break;
+				case 1:
+					mineralsAddedAmount = 2;
+					break;
+				case 2:
+					mineralsAddedAmount = 1;
+					break;
+			}
+			actualField.AddMinerals(mineralsAddedAmount);
+			Debug.Log("(" + actualPositionX + "," + actualPositionY + "): " + "Adding " + mineralsAddedAmount + " minerals");
+		}
+	}
+
+	private void savePlantIfSick() {
+		if (actualField.checkSick() == true) {
+			actualField.SavePlant();
+			Debug.Log("(" + actualPositionX + "," + actualPositionY + "): " + "Saving ");
+		}
+	}
+
+	private void plantRandomPlant() {
+		// zmienilem na UnityEngine bo nie sie kłóciło z System.Random
+		int los = UnityEngine.Random.Range(1, 4);
+		String plantName = "";
+		if (los == 1)
+			plantName = "Tulip";
+		if (los == 2)
+			plantName = "Wheat";
+		if (los == 3)
+			plantName = "Corn";
+		if (los == 4)
+			plantName = "Colza";
+
+		actualField.PlantIt(plantName);
+		Debug.Log("(" + actualPositionX + ", " + actualPositionY + "): Planting " + plantName);
+	}
+
 	// Update is called once per frame
 	void Update () {
 		speed = field[actualPositionX,actualPositionY].fieldSpeed;
 		step = speed * Time.deltaTime;
-
 
 		if (grid.FinalPath.Count > 0) {
 			GoWhere = field [grid.FinalPath [0].iGridY, grid.FinalPath [0].iGridX].transform.position;
@@ -105,89 +155,42 @@ public class Tractor : MonoBehaviour {
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			if (!actualField.getState () && actualField.type.Equals ("PlantField")) {
 				actualField.CheckDead ();
-				// zmienilem na UnityEngine bo nie sie kłóciło z System.Random
-				int los = UnityEngine.Random.Range (1, 4);
-				if (los == 1)
-					actualField.PlantIt ("Tulip");
-				if (los == 2)
-					actualField.PlantIt ("Wheat");
-				if (los == 3)
-					actualField.PlantIt ("Corn");
-				if (los == 4)
-					actualField.PlantIt ("Colza");
-
-				if (!actualField.checkIrrigation ()) {
-					actualField.Irrigate ();
-				}
-				if (actualField.checkMinerals () < 2) {
-					if (actualField.checkMinerals () == 1)
-						actualField.AddMinerals (1);
-					else
-						actualField.AddMinerals (2);
-				}
+				plantRandomPlant();
+				irrigateFieldIfDry();
+				
 			} else if (actualField.type.Equals ("PlantField")){
 				if (actualField.checkForCollect ()) {
+					Debug.Log("(" + actualPositionX + "," + actualPositionY + "): " + "Collecting");
 					actualField.priority = -10;
 					actualField.MakeGrass ();
 					actualField.Collect ();
-					if (!actualField.checkIrrigation ()) {
-						actualField.Irrigate ();
-					}
-					if (actualField.checkMinerals () < 2) {
-						if (actualField.checkMinerals () == 1)
-							actualField.AddMinerals (1);
-						else
-							actualField.AddMinerals (2);
-					}
-				} else {
+					irrigateFieldIfDry();
+					addMineralsToFieldIfNotEnough();
+				}
+				if (!actualField.checkForCollect() && !actualField.type.Equals(null)) {
 					actualField.CheckDead ();
-					if (!actualField.checkIrrigation ()) {
-						actualField.Irrigate ();
-					}
-					if (actualField.checkMinerals () < 2) {
-						if (actualField.checkMinerals () == 1)
-							actualField.AddMinerals (1);
-						else
-							actualField.AddMinerals (2);
-					}
-					if (actualField.checkSick ()) {
-						actualField.SavePlant ();
-					}
-
+					irrigateFieldIfDry();
+					addMineralsToFieldIfNotEnough();
+					savePlantIfSick();
 				}
 			}
 
 			// jeżeli jest już jakas roślinka
 			if (actualField.getState () && actualField.type.Equals ("PlantField")) {
 				// sprawdzam mineraly i wode po dojechaniu na miejsce
-				if (actualField.checkMinerals() < 1)
-					actualField.AddMinerals (3);
-				if (actualField.checkIrrigation() == false)
-					actualField.Irrigate ();	
+				addMineralsToFieldIfNotEnough();
+				irrigateFieldIfDry();
+				savePlantIfSick();
 
-				// sprawdzamy jak się ma roślinka
-				if (actualField.checkSick () == true)
-					actualField.SavePlant ();
-				
 				if (actualField.checkForCollect () == true){
-					actualField.Collect ();
 					// zbieramy i sadzimy nową
-					int los = UnityEngine.Random.Range (1, 4);
-					if (los == 1)
-						actualField.PlantIt("Tulip");
-					if (los == 2)
-						actualField.PlantIt("Wheat");
-					if (los == 3)
-						actualField.PlantIt("Corn");
-					if (los == 4)
-						actualField.PlantIt("Colza");
+					actualField.Collect ();
+					plantRandomPlant();
 				}
 
 			}
 
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 			// HERE WE MAKE NEXT DESTINATION POINT EXAMPLE : TargetPosition.transform.position = field[0,0].transform.position; //goes to field [0 0] field
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -243,6 +246,4 @@ public class Tractor : MonoBehaviour {
 		}
 		return pozMax;
 	}
-		
-
 }

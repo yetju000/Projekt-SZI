@@ -11,7 +11,7 @@ public class Tractor : MonoBehaviour {
 	int actualPositionY = 7;
 	public GameObject CrateRows;
 	public GameObject TargetPosition;
-	Field [,] field;
+	public Field [,] field;
 	int [,] PriorityTable;
 	int [,] SpeedTable;
 	Field actualField;

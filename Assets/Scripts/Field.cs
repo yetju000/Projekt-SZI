@@ -57,66 +57,74 @@ public class Field : MonoBehaviour {
 		
 	// Update is called once per frame
 	void Update () {
-		if (type.Equals("PlantField")) {
 
-			if (this.plant != null){
-				if (plant.getState())
-					priority = 0;
-				if (checkSick())
-					priority = priority + 5;
-				if (checkForCollect())
-					priority = priority + 10;
-			}
-			if (!checkIrrigation()) 
-				priority = priority + 3;
-			if (checkMinerals () == 1)
-				priority = priority + 2;
-			if (checkMinerals () == 0)
-				priority = priority + 3;
-			timer -= Time.deltaTime;
-			if (plant == null) {
-				setState (false);
-				priority = 1;
-			}
-			if (timer < 0) {
-				if (plant != null) {
-					priority = 0;
-					if (!plant.getState()) {
-						setState (false);
-						plant = null;
+        if (type.Equals("MudField"))
+        {
+            priority -= 10;
+        }
 
-						Material[] ma = mesh.materials;
-						ma [0] = deadPlant;
-						mesh.materials = ma;
+
+        if (type.Equals("PlantField")) {
+
+		if (this.plant != null){
+			if (plant.getState())
+				priority = 0;
+			if (checkSick())
+				priority = priority + 5;
+			if (checkForCollect())
+				priority = priority + 10;
+		}
+		if (!checkIrrigation()) 
+			priority = priority + 3;
+		if (checkMinerals () == 1)
+			priority = priority + 2;
+		if (checkMinerals () == 0)
+			priority = priority + 3;
+
+		timer -= Time.deltaTime;
+		if (plant == null) {
+			setState (false);
+			priority = 1;
+		}
+		if (timer < 0) {
+			if (plant != null) {
+				priority = 0;
+				if (!plant.getState()) {
+					setState (false);
+					plant = null;
+
+					Material[] ma = mesh.materials;
+					ma [0] = deadPlant;
+					mesh.materials = ma;
 						
-					}
-					if (plant.Grow (irrigation, minerals)) {
-						if (plant.getName ().Equals ("Tulipan")) {
-							Material[] ma = mesh.materials;
-							ma [0] = bigTulips;
-							mesh.materials = ma;
-						}
-						if (plant.getName ().Equals ("Pszenica")) {
-							Material[] ma = mesh.materials;
-							ma [0] = bigWheat;
-							mesh.materials = ma;
-						}
-						if (plant.getName ().Equals ("Kukurydza")) {
-							Material[] ma = mesh.materials;
-							ma [0] = bigCorn;
-							mesh.materials = ma;
-						}
-						if (plant.getName ().Equals ("Rzepak")) {
-							Material[] ma = mesh.materials;
-							ma [0] = bigColza;
-							mesh.materials = ma;
-						}
-					}
-					plant.checkOvergroved();
 				}
-				Dewater ();
-				LessMinerals ();
-				timer = Random.Range (4,7);
+				if (plant.Grow (irrigation, minerals)) {
+					if (plant.getName ().Equals ("Tulipan")) {
+						Material[] ma = mesh.materials;
+						ma [0] = bigTulips;
+						mesh.materials = ma;
+					}
+					if (plant.getName ().Equals ("Pszenica")) {
+						Material[] ma = mesh.materials;
+						ma [0] = bigWheat;
+						mesh.materials = ma;
+					}
+					if (plant.getName ().Equals ("Kukurydza")) {
+						Material[] ma = mesh.materials;
+						ma [0] = bigCorn;
+						mesh.materials = ma;
+					}
+					if (plant.getName ().Equals ("Rzepak")) {
+						Material[] ma = mesh.materials;
+						ma [0] = bigColza;
+						mesh.materials = ma;
+					}
+				}
+				plant.checkOvergroved();
+			}
+			Dewater ();
+			LessMinerals ();
+			timer = Random.Range (4,7);
 			}
 		}
 	}

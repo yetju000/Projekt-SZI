@@ -144,9 +144,7 @@ public class Grid : MonoBehaviour
                     {
                         Gizmos.color = Color.green;//Set the color of that node
                     }
-
                 }
-
 
                 Gizmos.DrawCube(n.vPosition, Vector3.one * (fNodeDiameter - fDistanceBetweenNodes));//Draw the node at the position of the node.
             }

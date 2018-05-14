@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Pathfinding : MonoBehaviour {
 
+
     Grid GridReference;//For referencing the grid class
     public Transform StartPosition;//Starting position to pathfind from
     public Transform TargetPosition;//Starting position to pathfind to
@@ -52,7 +53,7 @@ public class Pathfinding : MonoBehaviour {
                 {
                     continue;//Skip it
                 }
-				int MoveCost = CurrentNode.igCost + GetManhattenDistance(CurrentNode, NeighborNode);//getTime(CurrentNode, NeighborNode);//Get the F cost of that neighbor
+				int MoveCost =  spowolnienie + CurrentNode.igCost + GetManhattenDistance(CurrentNode, NeighborNode);//getTime(CurrentNode, NeighborNode);//Get the F cost of that neighbor
 
                 if (MoveCost < NeighborNode.igCost || !OpenList.Contains(NeighborNode))//If the f cost is greater than the g cost or it is not in the open list
                 {

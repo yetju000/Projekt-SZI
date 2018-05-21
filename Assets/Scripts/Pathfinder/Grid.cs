@@ -10,6 +10,7 @@ public class Grid : MonoBehaviour
     public Vector2 vGridWorldSize;//A vector2 to store the width and height of the graph in world units.
     public float fNodeRadius;//This stores how big each square on the graph will be
     public float fDistanceBetweenNodes;//The distance that the squares will spawn from eachother.
+    public GameObject CrateRows;
 
     Node[,] NodeArray;//The array of nodes that the A Star algorithm uses.
     public List<Node> FinalPath;//The completed path that the red line will be drawn along
@@ -17,14 +18,39 @@ public class Grid : MonoBehaviour
 
     float fNodeDiameter;//Twice the amount of the radius (Set in the start function)
     int iGridSizeX, iGridSizeY;//Size of the Grid in Array units.
-
+    Field[,] field;
+    public int[,] SpeedTable;
+    
 
     private void Start()//Ran once the program starts
     {
+        SpeedTable = new int[20, 20];
+        //field = new Field[20][20];
+        field = new Field[20, 20];
+        for (int i = 1; i <= 20; i++)
+        {
+            for (int j = 1; j <= 20; j++)
+            {
+                field[i - 1, j - 1] = CrateRows.transform.Find("Row (" + i + ")").transform.Find("Crate (" + j + ")").GetComponent<Field>();   //do tablicy field[20][20] zapisujemy informacje o wszystkich polach 
+            }
+        }
+
+        for (int i = 0; i < 20; i++)
+        {
+            for (int j = 0; j < 20; j++)
+            {
+                SpeedTable[i, j] = (int)field[i, j].fieldSpeed;
+            }
+        }
         fNodeDiameter = fNodeRadius * 2;//Double the radius to get diameter
         iGridSizeX = Mathf.RoundToInt(vGridWorldSize.x / fNodeDiameter);//Divide the grids world co-ordinates by the diameter to get the size of the graph in array units.
         iGridSizeY = Mathf.RoundToInt(vGridWorldSize.y / fNodeDiameter);//Divide the grids world co-ordinates by the diameter to get the size of the graph in array units.
         CreateGrid();//Draw the grid
+    }
+
+    public Field getFieldByNode(Node node)
+    {
+        return field[node.iGridX, node.iGridY];
     }
 
     void CreateGrid()

@@ -34,7 +34,7 @@ public class Pathfinding : MonoBehaviour {
             Node CurrentNode = OpenList[0];//Create a node and set it to the first item in the open list
             for(int i = 1; i < OpenList.Count; i++)//Loop through the open list starting from the second object
             {
-                if (OpenList[i].FCost < CurrentNode.FCost || OpenList[i].FCost == CurrentNode.FCost && OpenList[i].ihCost < CurrentNode.ihCost)//If the f cost of that object is less than or equal to the f cost of the current node
+                if (OpenList[i].itCost < CurrentNode.itCost)//OpenList[i].FCost < CurrentNode.FCost || OpenList[i].FCost == CurrentNode.FCost && OpenList[i].ihCost < CurrentNode.ihCost)//If the f cost of that object is less than or equal to the f cost of the current node
                 {
                     CurrentNode = OpenList[i];//Set the current node to that object
                 }
@@ -52,12 +52,13 @@ public class Pathfinding : MonoBehaviour {
                 {
                     continue;//Skip it
                 }
-				int MoveCost = CurrentNode.igCost + GetManhattenDistance(CurrentNode, NeighborNode);//getTime(CurrentNode, NeighborNode);//Get the F cost of that neighbor
-
+                int MoveCost = CurrentNode.igCost + getTimeToTarget(GridReference.getFieldByNode(CurrentNode), GridReference.getFieldByNode(NeighborNode));//GetManhattenDistance(CurrentNode, NeighborNode);//Get the F cost of that neighbor
+                //GetManhattenDistance(CurrentNode, NeighborNode) 
                 if (MoveCost < NeighborNode.igCost || !OpenList.Contains(NeighborNode))//If the f cost is greater than the g cost or it is not in the open list
                 {
                     NeighborNode.igCost = MoveCost;//Set the g cost to the f cost
                     NeighborNode.ihCost = GetManhattenDistance(NeighborNode, TargetNode);//Set the h cost
+                    NeighborNode.itCost = getTimeToTarget(GridReference.getFieldByNode(CurrentNode), GridReference.getFieldByNode(NeighborNode));
                     NeighborNode.ParentNode = CurrentNode;//Set the parent of the node for retracing steps
 
                     if(!OpenList.Contains(NeighborNode))//If the neighbor is not in the openlist
@@ -95,15 +96,11 @@ public class Pathfinding : MonoBehaviour {
 
         return ix + iy;//Return the sum
     }
-	/*
-	int getTime(Node startingNode, Node targetNode) {
+	
+	int getTimeToTarget(Field startingNode, Field targetNode) {
 		float time = 0;
-		Node CurrentNode = startingNode;
-		time = startingNode.fieldSpeed + targetNode.fieldSpeed;
-
-		startingNode.GetType();
-
+		Field CurrentNode = startingNode;
+        time = 1000 - (startingNode.fieldSpeed + targetNode.fieldSpeed);
 		return (int) time;
 	}
-	*/
 }

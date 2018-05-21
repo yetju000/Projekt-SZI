@@ -40,17 +40,17 @@ public class Field : MonoBehaviour {
 		mesh = this.GetComponent<MeshRenderer>();
 
 		if (type.Equals ("PlantField")) {
-			fieldSpeed = 20f;
+			fieldSpeed = 10f;
 			priority = 1;
 		}
 			
 		if (type.Equals ("PathField")) {
-			fieldSpeed = 30f;
+			fieldSpeed = 15f;
 			priority = -1;
 		}
 			
 		if (type.Equals ("MudField")) {
-			fieldSpeed = 10f;
+			fieldSpeed = 5f;
 			priority = -1;
 		}
 	}

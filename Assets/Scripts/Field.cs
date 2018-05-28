@@ -15,10 +15,12 @@ public class Field : MonoBehaviour {
 	int chanceForDewater = 5; // % for lack of water
 	int chanceForLessMinerals = 5;
 
-	Plant plant = null;
+	public Plant plant = null;
 	float timer = 0.0f;
 	public MeshRenderer mesh;
 	public string type;
+    public string lastPlantedPlant;
+    public List<Field> fieldNeighbours;
 
 	// textury
 	public Material grass;
@@ -34,8 +36,8 @@ public class Field : MonoBehaviour {
 
 	public float fieldSpeed;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 		timer = Random.Range (3,6);
 		mesh = this.GetComponent<MeshRenderer>();
 
@@ -164,12 +166,58 @@ public class Field : MonoBehaviour {
 		}
 		return false;
 	}
-	public int Collect() {
-		int howmany = plant.Collect();
-		plant = null;
-		return howmany;
+	public int Collect(Field [,] wholeField) {
+        int howmany = plant.Collect();
+
+        if (this.plant.getName().Equals("Tulipan"))
+        {
+            foreach (var f in this.fieldNeighbours)
+            {
+                if (f.plant.getName().Equals("Tulipan"))
+                {
+                    return 1;
+                }
+            }
+            return howmany;
+        }
+
+        if (lastPlantedPlant.Equals(plant.getName()))
+        {
+            lastPlantedPlant = plant.getName();
+            plant = null;
+            return 1;
+        }
+        else if (checkIfFieldIsCloseToMud(this))
+        {
+            lastPlantedPlant = plant.getName();
+            plant = null;
+            if (howmany >= 2)
+                return 2;
+            else
+                return howmany;
+        }
+        else
+        {
+            lastPlantedPlant = plant.getName();
+            plant = null;
+            return howmany;
+        }
 	}
-	public void MakeGrass() {
+
+    private bool checkIfFieldIsCloseToMud(Field field)
+    {
+        foreach(var f in field.fieldNeighbours)
+        {
+            if(f.type == "MudField")
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public void MakeGrass() {
 		Material[] ma = mesh.materials;
 		ma [0] = grass;
 		mesh.materials = ma;

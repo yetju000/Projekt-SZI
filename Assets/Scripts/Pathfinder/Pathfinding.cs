@@ -52,7 +52,7 @@ public class Pathfinding : MonoBehaviour {
                 {
                     continue;//Skip it
                 }
-                int MoveCost = CurrentNode.igCost + getTimeToTarget(GridReference.getFieldByNode(CurrentNode), GridReference.getFieldByNode(NeighborNode));//GetManhattenDistance(CurrentNode, NeighborNode);//Get the F cost of that neighbor
+                int MoveCost = CurrentNode.igCost + getTimeToTarget(GridReference.getFieldByNode(CurrentNode), GridReference.getFieldByNode(NeighborNode)) + GetManhattenDistance(CurrentNode, NeighborNode);//Get the F cost of that neighbor
                 //GetManhattenDistance(CurrentNode, NeighborNode) 
                 if (MoveCost < NeighborNode.igCost || !OpenList.Contains(NeighborNode))//If the f cost is greater than the g cost or it is not in the open list
                 {

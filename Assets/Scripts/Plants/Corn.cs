@@ -13,7 +13,20 @@ public class Corn : Plant
 		HowManyTimesLackOfMinerals = 0;
 	}
 
-	public override bool Grow(bool irrigation, int minerals)
+    public override int Collect()
+    {
+        state = false;
+
+        if(HowManyTimesLackOfWater > 7 || HowManyTimesSick > 7 || HowManyTimesLackOfMinerals > 7){
+            return 1;
+        }
+        else
+        {
+            return 2;
+        }
+    }
+
+    public override bool Grow(bool irrigation, int minerals)
 	{
 		if (HowManyTimesLackOfWater > 10 || HowManyTimesSick > 10 || HowManyTimesLackOfMinerals > 10)
 			state = false;

@@ -12,6 +12,7 @@ public class Tractor : MonoBehaviour {
 	public GameObject CrateRows;
 	public GameObject TargetPosition;
 	Field [,] field;
+    Field[] fieldNeighbours;
 	int [,] PriorityTable;
 	int [,] SpeedTable;
 	Field actualField;
@@ -27,14 +28,21 @@ public class Tractor : MonoBehaviour {
 	int priorytetX = 0;
 	int priorytetY = 0;
 
-	// Use this for initialization
-	void Start () {
+    Dictionary<string,int> yields = new Dictionary<string, int>();
+
+    // Use this for initialization
+    void Start () {
 		GoWhere = new Vector3();
 		PriorityTable = new int [20,20];
 		SpeedTable = new int[20,20];
 
-		//field = new Field[20][20];
-		field = new Field[20,20];
+        yields.Add("Tulipan", 0);
+        yields.Add("Rzepak", 0);
+        yields.Add("Pszenica", 0);
+        yields.Add("Kukurydza", 0);
+
+        //field = new Field[20][20];
+        field = new Field[20,20];
 		for (int i = 1; i <= 20; i++) {
 			for (int j = 1; j <= 20; j++) {
 				field[i-1,j-1] = CrateRows.transform.Find ("Row ("+i+")").transform.Find ("Crate ("+j+")").GetComponent<Field> ();   //do tablicy field[20][20] zapisujemy informacje o wszystkich polach 
@@ -50,12 +58,92 @@ public class Tractor : MonoBehaviour {
 		speed = field[actualPositionX,actualPositionY].fieldSpeed;
 		step = speed * Time.deltaTime;
 
+        
+
+        for (int i=1; i<=20;i++)
+        {
+            for (int j=1;j<=20;j++)
+            {
+                FindFieldNeighbours(field, field[i - 1, j - 1],i,j);
+            }
+        }
+
 		// do debugowania
 		//priorytet = actualField.getPriority ();
 		//Debug.Log("Priorytet poczatkowy: " + priorytet);
 	}
 
-	private void irrigateFieldIfDry() {
+    void calculateProfit()
+    {
+        int profit = 0;
+        foreach (KeyValuePair<string, int> entry in yields)
+        {
+            switch (entry.Key)
+            {
+                case "Tulipan":
+                    profit += entry.Value * 50;
+                    break;
+                case "Rzepak":
+                    profit += entry.Value * 25;
+                    break;
+                case "Pszenica":
+                    profit += entry.Value * 25;
+                    break;
+                case "Kukurydza":
+                    profit += entry.Value * 10;
+                    break;
+            }
+        }
+        Debug.Log("Profit:" + profit);
+    }
+
+    void FindFieldNeighbours(Field [,] wholeField, Field field, int fieldX, int fieldY)
+    {
+        List<Field> fieldNeighbours = new List<Field>();
+        //Prawo
+        if (fieldX+1 < 20)
+        {
+            field.fieldNeighbours.Add(wholeField[fieldX + 1,fieldY]);
+        }
+        //Dol
+        if(fieldY+1 < 20)
+        {
+            field.fieldNeighbours.Add(wholeField[fieldX, fieldY+1]);
+        }
+        //Lewo
+        if (fieldX - 1 >= 0)
+        {
+            field.fieldNeighbours.Add(wholeField[fieldX + 1, fieldY]);
+        }
+        //Gora
+        if (fieldY - 1 >= 0)
+        {
+            field.fieldNeighbours.Add(wholeField[fieldX, fieldY - 1]);
+        }
+        //Lewo gora
+        if (fieldX - 1 >= 0 && fieldY - 1 >= 0)
+        {
+            field.fieldNeighbours.Add(wholeField[fieldX-1, fieldY - 1]);
+        }
+        //Lewo dol
+        if (fieldX - 1 >= 0 && fieldY + 1 < 20)
+        {
+            field.fieldNeighbours.Add(wholeField[fieldX-1, fieldY + 1]);
+        }
+        //Prawo gora
+        if (fieldX + 1 < 20 && fieldY - 1 >= 0)
+        {
+            field.fieldNeighbours.Add(wholeField[fieldX + 1, fieldY-1]);
+        }
+        //Prawo dol
+        if (fieldX + 1 < 20 && fieldY + 1 < 20)
+        {
+            field.fieldNeighbours.Add(wholeField[fieldX + 1, fieldY+1]);
+        }
+    }
+
+
+    private void irrigateFieldIfDry() {
 		if (!actualField.checkIrrigation()) {
 			actualField.Irrigate();
 			Debug.Log("(" + actualPositionX + "," + actualPositionY + "): Irrigating");
@@ -163,8 +251,11 @@ public class Tractor : MonoBehaviour {
 					Debug.Log("(" + actualPositionX + "," + actualPositionY + "): " + "Collecting");
 					actualField.priority = -10;
 					actualField.MakeGrass ();
-					actualField.Collect ();
-					irrigateFieldIfDry();
+                    string yieldName = actualField.plant.getName();
+                    int fieldYield = actualField.Collect(field);
+                    yields[yieldName] += fieldYield;
+                    calculateProfit();
+                    irrigateFieldIfDry();
 					addMineralsToFieldIfNotEnough();
 				}
 				if (!actualField.checkForCollect() && !actualField.type.Equals(null)) {
@@ -183,9 +274,12 @@ public class Tractor : MonoBehaviour {
 				savePlantIfSick();
 
 				if (actualField.checkForCollect () == true){
-					// zbieramy i sadzimy nową
-					actualField.Collect ();
-					plantRandomPlant();
+                    // zbieramy i sadzimy nową
+                    string yieldName = actualField.plant.getName();
+                    int fieldYield = actualField.Collect(field);
+                    yields[yieldName] += fieldYield;
+                    calculateProfit();
+                    plantRandomPlant();
 				}
 
 			}
@@ -213,6 +307,7 @@ public class Tractor : MonoBehaviour {
 			//updatePriority ();
 			timer = 1;
 		}
+
 	}
 
 	public void changeField(int x, int y) {

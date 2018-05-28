@@ -14,7 +14,12 @@ public class Tulip : Plant
 		HowManyTimesLackOfMinerals = 0;
 	}
 
-	public override bool Grow(bool irrigation, int minerals)
+    public override int Collect()
+    {
+        return 2;
+    }
+
+    public override bool Grow(bool irrigation, int minerals)
 	{
 		if (HowManyTimesLackOfWater > 10 || HowManyTimesSick > 10 || HowManyTimesLackOfMinerals > 10)
 			state = false;

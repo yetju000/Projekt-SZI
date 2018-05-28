@@ -44,12 +44,7 @@ public abstract class Plant
 		sick = false;
 	}
 
-	public int Collect()
-	{
-		state = false;
-
-		return Random.Range(1, 3);
-	}
+    public abstract int Collect();
 
 	public void checkOvergroved()
 	{

@@ -13,7 +13,13 @@ public class Colza : Plant
 		HowManyTimesLackOfMinerals = 0;
 	}
 
-	public override bool Grow(bool irrigation, int minerals)
+    public override int Collect()
+    {
+        state = false;
+        return 3;
+    }
+
+    public override bool Grow(bool irrigation, int minerals)
 	{
 		if (HowManyTimesLackOfWater > 10 || HowManyTimesSick > 10 || HowManyTimesLackOfMinerals > 10)
 			state = false;

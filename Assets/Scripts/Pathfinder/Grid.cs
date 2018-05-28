@@ -25,7 +25,6 @@ public class Grid : MonoBehaviour
     private void Start()//Ran once the program starts
     {
         SpeedTable = new int[20, 20];
-        //field = new Field[20][20];
         field = new Field[20, 20];
         for (int i = 1; i <= 20; i++)
         {
@@ -39,7 +38,7 @@ public class Grid : MonoBehaviour
         {
             for (int j = 0; j < 20; j++)
             {
-                SpeedTable[i, j] = (int)field[i, j].fieldSpeed;
+                SpeedTable[i, j] = (int)field[i, j].FieldSpeed;
             }
         }
         fNodeDiameter = fNodeRadius * 2;//Double the radius to get diameter

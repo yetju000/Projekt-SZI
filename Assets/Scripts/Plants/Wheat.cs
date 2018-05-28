@@ -16,6 +16,7 @@ public class Wheat : Plant
 
     public override int Collect()
     {
+        state = false;
         return 2;
     }
 

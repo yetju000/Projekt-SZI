@@ -16,6 +16,7 @@ public class Tulip : Plant
 
     public override int Collect()
     {
+        state = false;
         return 2;
     }
 

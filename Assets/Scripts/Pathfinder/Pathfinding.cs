@@ -99,8 +99,8 @@ public class Pathfinding : MonoBehaviour {
 	
 	int getTimeToTarget(Field startingNode, Field targetNode) {
 		float time = 0;
-		Field CurrentNode = startingNode;
-        time = 1000 - (startingNode.fieldSpeed + targetNode.fieldSpeed);
+        Field CurrentNode = startingNode;
+        time = 1000 - (startingNode.FieldSpeed + targetNode.FieldSpeed);
 		return (int) time;
 	}
 }

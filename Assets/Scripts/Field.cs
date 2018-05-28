@@ -3,12 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Field : MonoBehaviour {
-	//there can be 3 type of fields : MudField ,PlantField and  PathField
-
 	public int priority; 
-
-	// if (state false = 0, state true = 1) , (irrigation false = 3 , irrigation true = 0) , (minerals 2 = 0 , minerals 1 = 2 , minerals 0 = 3) , (sick 1 = 5 , sick 0 = 0) , 
-	//checkForCollect true = 10 , checkForCollect false = 0
 	bool state = false; // if anything grows here. 0 = no , 1 = yes
 	bool irrigation = true; // if needs water = 0 , if its ok = 1;
 	int minerals = 2; //0 if no minerals , 1 if medium , 2 if its ok
@@ -22,7 +17,7 @@ public class Field : MonoBehaviour {
     public string lastPlantedPlant;
     public List<Field> fieldNeighbours;
 
-	// textury
+	//textury
 	public Material grass;
 	public Material smallTulips;
 	public Material bigTulips;
@@ -34,25 +29,26 @@ public class Field : MonoBehaviour {
 	public Material bigColza;
 	public Material deadPlant;
 
-	public float fieldSpeed;
+	public float FieldSpeed;
 
     // Use this for initialization
     void Start () {
 		timer = Random.Range (3,6);
 		mesh = this.GetComponent<MeshRenderer>();
+        fieldNeighbours = new List<Field>();
 
 		if (type.Equals ("PlantField")) {
-			fieldSpeed = 10f;
+			FieldSpeed = 10f;
 			priority = 1;
 		}
 			
 		if (type.Equals ("PathField")) {
-			fieldSpeed = 15f;
+			FieldSpeed = 15f;
 			priority = -1;
 		}
 			
 		if (type.Equals ("MudField")) {
-			fieldSpeed = 5f;
+			FieldSpeed = 5f;
 			priority = -1;
 		}
 	}
@@ -123,7 +119,13 @@ public class Field : MonoBehaviour {
 		}
 	}
 
-	public bool getState() {
+    public void addFieldNeigbour(Field field)
+    {
+        fieldNeighbours.Add(field);
+    }
+
+
+    public bool getState() {
 		return this.state;
 	}
 	public void setState(bool state) {
@@ -173,7 +175,7 @@ public class Field : MonoBehaviour {
         {
             foreach (var f in this.fieldNeighbours)
             {
-                if (f.plant.getName().Equals("Tulipan"))
+                if (f.getState() == true && f.plant.getName().Equals("Tulipan"))
                 {
                     return 1;
                 }
@@ -204,9 +206,9 @@ public class Field : MonoBehaviour {
         }
 	}
 
-    private bool checkIfFieldIsCloseToMud(Field field)
+    public bool checkIfFieldIsCloseToMud(Field Field)
     {
-        foreach(var f in field.fieldNeighbours)
+        foreach(var f in Field.fieldNeighbours)
         {
             if(f.type == "MudField")
             {

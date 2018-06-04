@@ -405,12 +405,12 @@ public class PlantsArrangementLearner {
 		string[,] mutatedChild = (string [,])child.Clone();
 		if (UnityEngine.Random.Range(1, 100) < chanceForMutation) {
 			Pair<int, int> mutationPoint = getRandomPoint();
-			int mutationPointX = mutationPoint.getY();
-			int mutationPointY = mutationPoint.getX();
+			int mutationPointX = mutationPoint.getX();
+			int mutationPointY = mutationPoint.getY();
 			while (!((mutatedChild[mutationPointX, mutationPointY] != "PathField") && (mutatedChild[mutationPointX, mutationPointY] != "MudField"))) {
 				mutationPoint = getRandomPoint();
-				mutationPointX = mutationPoint.getY();
-				mutationPointY = mutationPoint.getX();
+				mutationPointX = mutationPoint.getX();
+				mutationPointY = mutationPoint.getY();
 			}
 			mutatedChild[mutationPointX, mutationPointY] = getRandomPlant();
 		}

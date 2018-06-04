@@ -5,7 +5,7 @@ public class Wheat : Plant
 
 	public Wheat()
 	{
-		name = "Pszenica";
+		name = "Wheat";
 		state = true;
 		HowMuchGrowed = 0;
 		sick = false;

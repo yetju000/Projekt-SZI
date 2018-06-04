@@ -21,19 +21,21 @@ public class Tractor : MonoBehaviour {
 	public float speed;
 	public float step;
 	Vector3 GoWhere;
-
+	private bool learned = false;
+	private string [,] plantsArrangement;
 	// priorytet - wartosc pola
 	int priorytetX = 0;
 	int priorytetY = 0;
+	public int numOfLearningIterations;
 
     Dictionary<string,int> yields = new Dictionary<string, int>();
 
     void initYields()
     {
-        yields.Add("Tulipan", 0);
-        yields.Add("Rzepak", 0);
-        yields.Add("Pszenica", 0);
-        yields.Add("Kukurydza", 0);
+        yields.Add("Tulip", 0);
+        yields.Add("Colza", 0);
+        yields.Add("Wheat", 0);
+        yields.Add("Corn", 0);
     }
 
     void initField(Field[,] field)
@@ -126,12 +128,20 @@ public class Tractor : MonoBehaviour {
         speed = field[actualPositionX, actualPositionY].FieldSpeed;
         step = speed * Time.deltaTime;
         findNeighboursOfEveryField(field);
-    }
+		plantsArrangement = new string[20, 20];
+	}
 
-    // Update is called once per frame
-    void Update()
+	// Update is called once per frame
+	void Update()
     {
-        speed = field[actualPositionX, actualPositionY].FieldSpeed;
+		if (learned == false) {
+			PlantsArrangementLearner pa = new PlantsArrangementLearner(CrateRows);
+			pa.learn(numOfLearningIterations);
+			learned = true;
+			plantsArrangement = pa.getPlantsArrangement();
+		}
+
+		speed = field[actualPositionX, actualPositionY].FieldSpeed;
         step = speed * Time.deltaTime;
 
 
@@ -158,16 +168,15 @@ public class Tractor : MonoBehaviour {
             if (!actualField.getState() && actualField.type.Equals("PlantField"))
             {
                 actualField.CheckDead();
-                plantRandomPlant();
+                //plantRandomPlant();
+				plantPlannedPlant();
                 irrigateFieldIfDry();
 
-            }
-            else if (actualField.type.Equals("PlantField"))
+            }else if (actualField.getState() && actualField.type.Equals("PlantField"))
             {
                 if (actualField.checkForCollect())
                 {
-                    Debug.Log("(" + actualPositionX + "," + actualPositionY + "): " + "Collecting");
-                    actualField.priority = -10;
+					actualField.priority = -10;
                     actualField.MakeGrass();
                     string yieldName = actualField.plant.getName();
                     int fieldYield = actualField.Collect(field);
@@ -175,7 +184,8 @@ public class Tractor : MonoBehaviour {
                     calculateProfit();
                     irrigateFieldIfDry();
                     addMineralsToFieldIfNotEnough();
-                }
+					Debug.Log("(" + actualPositionX + "," + actualPositionY + "): " + "Collecting " + fieldYield + " " + yieldName);
+				}
                 if (!actualField.checkForCollect() && !actualField.type.Equals(null))
                 {
                     actualField.CheckDead();
@@ -197,7 +207,8 @@ public class Tractor : MonoBehaviour {
                     int fieldYield = actualField.Collect(field);
                     yields[yieldName] += fieldYield;
                     calculateProfit();
-                    plantRandomPlant();
+					plantPlannedPlant();
+					//plantRandomPlant();
                 }
 
             }
@@ -225,16 +236,16 @@ public class Tractor : MonoBehaviour {
         {
             switch (entry.Key)
             {
-                case "Tulipan":
+                case "Tulip":
                     profit += entry.Value * 50;
                     break;
-                case "Rzepak":
+                case "Colza":
                     profit += entry.Value * 25;
                     break;
-                case "Pszenica":
+                case "Wheat":
                     profit += entry.Value * 25;
                     break;
-                case "Kukurydza":
+                case "Corn":
                     profit += entry.Value * 10;
                     break;
             }
@@ -278,7 +289,7 @@ public class Tractor : MonoBehaviour {
 
 	private void plantRandomPlant() {
 		// zmienilem na UnityEngine bo nie sie kłóciło z System.Random
-		int los = UnityEngine.Random.Range(1, 4);
+		int los = UnityEngine.Random.Range(1, 5);
 		String plantName = "";
 		if (los == 1)
 			plantName = "Tulip";
@@ -289,6 +300,12 @@ public class Tractor : MonoBehaviour {
 		if (los == 4)
 			plantName = "Colza";
 
+		actualField.PlantIt(plantName);
+		Debug.Log("(" + actualPositionX + ", " + actualPositionY + "): Planting " + plantName);
+	}
+
+	private void plantPlannedPlant() {
+		string plantName = plantsArrangement[actualPositionX, actualPositionY];
 		actualField.PlantIt(plantName);
 		Debug.Log("(" + actualPositionX + ", " + actualPositionY + "): Planting " + plantName);
 	}

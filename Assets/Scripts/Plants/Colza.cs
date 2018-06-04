@@ -4,7 +4,7 @@ public class Colza : Plant
 
 	public Colza()
 	{
-		name = "Rzepak";
+		name = "Colza";
 		state = true;
 		HowMuchGrowed = 0;
 		sick = false;

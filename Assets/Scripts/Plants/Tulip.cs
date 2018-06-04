@@ -5,7 +5,7 @@ public class Tulip : Plant
 
 	public Tulip()
 	{
-		name = "Tulipan";
+		name = "Tulip";
 		state = true;
 		HowMuchGrowed = 0;
 		sick = false;

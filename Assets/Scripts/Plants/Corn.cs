@@ -4,7 +4,7 @@ public class Corn : Plant
 
 	public Corn()
 	{
-		name = "Kukurydza";
+		name = "Corn";
 		state = true;
 		HowMuchGrowed = 0;
 		sick = false;
@@ -16,14 +16,7 @@ public class Corn : Plant
     public override int Collect()
     {
         state = false;
-
-        if(HowManyTimesLackOfWater > 7 || HowManyTimesSick > 7 || HowManyTimesLackOfMinerals > 7){
-            return 1;
-        }
-        else
-        {
-            return 2;
-        }
+        return 5;
     }
 
     public override bool Grow(bool irrigation, int minerals)

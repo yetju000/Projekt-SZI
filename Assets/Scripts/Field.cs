@@ -39,7 +39,7 @@ public class Field : MonoBehaviour {
 
 		if (type.Equals ("PlantField")) {
 			FieldSpeed = 10f;
-			priority = 1;
+			priority = -1;
 		}
 			
 		if (type.Equals ("PathField")) {
@@ -89,22 +89,22 @@ public class Field : MonoBehaviour {
 						
 					}
 					if (plant.Grow (irrigation, minerals)) {
-						if (plant.getName ().Equals ("Tulipan")) {
+						if (plant.getName ().Equals ("Tulip")) {
 							Material[] ma = mesh.materials;
 							ma [0] = bigTulips;
 							mesh.materials = ma;
 						}
-						if (plant.getName ().Equals ("Pszenica")) {
+						if (plant.getName ().Equals ("Wheat")) {
 							Material[] ma = mesh.materials;
 							ma [0] = bigWheat;
 							mesh.materials = ma;
 						}
-						if (plant.getName ().Equals ("Kukurydza")) {
+						if (plant.getName ().Equals ("Corn")) {
 							Material[] ma = mesh.materials;
 							ma [0] = bigCorn;
 							mesh.materials = ma;
 						}
-						if (plant.getName ().Equals ("Rzepak")) {
+						if (plant.getName ().Equals ("Colza")) {
 							Material[] ma = mesh.materials;
 							ma [0] = bigColza;
 							mesh.materials = ma;
@@ -171,46 +171,45 @@ public class Field : MonoBehaviour {
 	public int Collect(Field [,] wholeField) {
         int howmany = plant.Collect();
 
-        if (this.plant.getName().Equals("Tulipan"))
-        {
-            foreach (var f in this.fieldNeighbours)
-            {
-                if (f.getState() == true && f.plant.getName().Equals("Tulipan"))
-                {
-                    return 1;
-                }
+		if (this.plant.getName().Equals("Tulip")){
+			bool checkRes = checkIfFieldIsCloseToPlant("Tulip", this);
+            if (checkRes){
+                return 1;
             }
-            return howmany;
         }
 
-        if (lastPlantedPlant.Equals(plant.getName()))
-        {
-            lastPlantedPlant = plant.getName();
-            plant = null;
-            return 1;
-        }
-        else if (checkIfFieldIsCloseToMud(this))
-        {
-            lastPlantedPlant = plant.getName();
-            plant = null;
-            if (howmany >= 2)
-                return 2;
-            else
-                return howmany;
-        }
-        else
-        {
-            lastPlantedPlant = plant.getName();
-            plant = null;
-            return howmany;
-        }
+		if (this.plant.getName().Equals("Colza")) {
+			if (checkIfFieldIsCloseToField("MudField", this) && checkIfFieldIsCloseToPlant("Tulip", this)) {
+				return 1;
+			}
+
+			if (checkIfFieldIsCloseToField("MudField", this) || checkIfFieldIsCloseToPlant("Tulip",this)) {
+				return 2;
+			}
+		}
+
+		if (this.plant.getName().Equals("Wheat")) {
+			if (checkIfFieldIsCloseToField("MudField", this) && checkIfFieldIsCloseToPlant("Tulip", this)) {
+				return 1;
+			}
+		}
+
+		if (this.plant.getName().Equals("Corn")) {
+			if (checkIfFieldIsCloseToField("PathField", this)) {
+				return 3;
+			}
+		}
+
+		lastPlantedPlant = plant.getName();
+		plant = null;
+		return howmany;
 	}
 
-    public bool checkIfFieldIsCloseToMud(Field Field)
+    public bool checkIfFieldIsCloseToField(string fieldType, Field Field)
     {
         foreach(var f in Field.fieldNeighbours)
         {
-            if(f.type == "MudField")
+            if(f.type == fieldType)
             {
                 return true;
             }
@@ -218,8 +217,16 @@ public class Field : MonoBehaviour {
         return false;
     }
 
+	public bool checkIfFieldIsCloseToPlant(string plantName, Field Field) {
+		foreach (var f in Field.fieldNeighbours) {
+			if (f.getState() == true && f.plant.getName().Equals(plantName)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    public void MakeGrass() {
+	public void MakeGrass() {
 		Material[] ma = mesh.materials;
 		ma [0] = grass;
 		mesh.materials = ma;
